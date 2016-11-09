@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<ul id="list">
+
+</ul>
+<pre id="object"></pre>
+
+
+<script src="https://www.gstatic.com/firebasejs/3.5.3/firebase.js"></script>
+<script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyAs9XTGG00aMtdEJQ_NrJrSsYqTWsfTcHI",
+        authDomain: "web-quickstart1-50fb1.firebaseapp.com",
+        databaseURL: "https://web-quickstart1-50fb1.firebaseio.com",
+        storageBucket: "web-quickstart1-50fb1.appspot.com",
+        messagingSenderId: "760057658603"
+    };
+    firebase.initializeApp(config);
+
+
+    const PreObject = document.getElementById('object');
+    const ulList = document.getElementById('list');
+
+    const dbPreObj = firebase.database().ref().child('object');
+    const dbRefList = dbPreObj.child('hobbies');
+
+    dbPreObj.on('value', snap => {
+        //console.log(snap.val());
+        PreObject.innerText = JSON.stringify(snap.val(), null, 3);
+    });
+
+    dbRefList.on('child_added', snap => {
+        console.log(snap.val());
+        const li = document.createElement('li');
+        li.innerText = snap.val();
+        li.id = snap.key;
+        ulList.appendChild(li);
+    });
+
+    dbRefList.on('child_changed', snap => {
+        const liChanged = document.getElementById(snap.key);
+        liChanged.innerText = snap.val();
+    });
+
+    dbRefList.on('child_removed', snap => {
+        const liToRemove = document.getElementById(snap.key);
+        liToRemove.remove();
+    });
+
+</script>
+</body>
+</html>
